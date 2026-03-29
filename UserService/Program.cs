@@ -1,4 +1,6 @@
 
+using Microsoft.EntityFrameworkCore;
+using UserService.Application;
 using UserService.Infrastructure;
 
 namespace UserService {
@@ -12,11 +14,19 @@ namespace UserService {
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var rabbitMqPublisher = await RabbitMQPublisher.InitAsync(builder.Configuration["RabbitMQ:Url"]);
-            builder.Services.AddSingleton(rabbitMqPublisher);
+            if (!EF.IsDesignTime) {
+                var rabbitMqPublisher = await RabbitMQPublisher.InitAsync(builder.Configuration["RabbitMQ:Url"]);
+                builder.Services.AddSingleton(rabbitMqPublisher);
+            }
 
+            // Add DbContext
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration["ConnectionStrings:SqlConnection"])
+            );
 
-            // builder.WebHost.ConfigureKestrel(options => options.ListenAnyIP(5000));
+            // Add UnitOfWork
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             builder.Services.AddCors(options =>
             {
@@ -28,10 +38,10 @@ namespace UserService {
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment()) {
+            //if (app.Environment.IsDevelopment()) {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             app.UseHttpsRedirection();
             app.UseAuthorization();

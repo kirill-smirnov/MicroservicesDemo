@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -10,6 +8,20 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
 
   userservice:
     build:
@@ -22,11 +34,10 @@ services:
       - RabbitMQ__Url=amqp://guest:guest@rabbitmq:5672
       - ASPNETCORE_URLS=http://+:8080
     depends_on:
-      - rabbitmq
-    entrypoint: ["dotnet", "UserService.dll"]
+      rabbitmq:
+        condition: service_healthy
     ports:
-      - "5000:8080"        # map container port to host
-      - "5001:8081"
+      - "5000:8080"
 
   notificationservice:
     build:
@@ -38,5 +49,5 @@ services:
     environment:
       - RabbitMQ__Url=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - rabbitmq
-    entrypoint: ["dotnet", "NotificationService.dll"]
+      rabbitmq:
+        condition: service_healthy

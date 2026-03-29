@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using UserService.Application;
 using UserService.Domain.Entities;
 using UserService.Domain.Events;
 using UserService.Infrastructure;
@@ -7,18 +8,20 @@ namespace UserService.API.Controllers {
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase {
-        private static readonly List<User> _users = new();
 
         private readonly RabbitMQPublisher _publisher;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(RabbitMQPublisher publisher) {
+        public UsersController(RabbitMQPublisher publisher, IUnitOfWork unitOfWork){
             _publisher = publisher;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(User request) {
-            request.Id = Guid.NewGuid();
-            _users.Add(request);
+
+            await _unitOfWork.Users.AddAsync(request);
+            await _unitOfWork.CommitAsync();    
 
             var @event = new UserCreatedEvent {
                 UserId = request.Id,
@@ -31,8 +34,10 @@ namespace UserService.API.Controllers {
         }
 
         [HttpGet]
-        public IActionResult Get() {
-            return Ok(_users);
+        public async Task<IActionResult> GetAllAsync() {
+            var users = await _unitOfWork.Users.GetAllAsync();
+
+            return Ok(users);
         }
     }
 }
