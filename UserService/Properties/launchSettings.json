@@ -23,12 +23,13 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "RabbitMQ__Url": "amqp://guest:guest@host.docker.internal:5672/",
+        "ConnectionStrings__SqlConnection": "Server=host.docker.internal,1433;Database=UserDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
       },
       "publishAllPorts": true,
       "useSSL": true,
       "launchBrowser": true,
-      "launchUrl": "swagger"
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json"
