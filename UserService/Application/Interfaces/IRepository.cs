@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace UserService.Application {
+namespace UserService.Application.Interfaces {
     public interface IRepository<TEntity> where TEntity : class {
         Task<TEntity?> GetAsync(int id);
         Task<IEnumerable<TEntity>> GetAllAsync();

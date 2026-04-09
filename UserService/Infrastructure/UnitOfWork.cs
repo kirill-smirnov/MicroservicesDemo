@@ -1,4 +1,4 @@
-﻿using UserService.Application;
+﻿using UserService.Application.Interfaces;
 using UserService.Domain.Entities;
 
 namespace UserService.Infrastructure {

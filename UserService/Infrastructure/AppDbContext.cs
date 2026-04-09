@@ -15,11 +15,18 @@ namespace UserService.Infrastructure {
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
+                modelBuilder.Entity<User>()
+                    .HasIndex(u => u.Email)
+                    .IsUnique();
+
                 entity.Property(e => e.Id)
                     .HasDefaultValueSql("NEWID()")
                     .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Email).IsRequired();
+                entity.Property(e => e.Name).HasMaxLength(32).IsRequired();
+                entity.Property(e => e.Email).HasMaxLength(256).IsRequired();
+                entity.Property(e => e.PasswordHash).HasMaxLength(60).IsRequired();
                     
                 entity.Property(e => e.CreatedAt).IsRequired();
             });
