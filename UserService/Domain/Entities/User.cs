@@ -1,3 +1,4 @@
+using UserService.Application.DTO;
 using UserService.Domain.Interfaces;
 
 namespace UserService.Domain.Entities {
@@ -5,6 +6,7 @@ namespace UserService.Domain.Entities {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public string PasswordHash { get; set; }
         public DateTimeOffset CreatedAt { get;  set; }
         public DateTimeOffset UpdatedAt { get; set; }
     }

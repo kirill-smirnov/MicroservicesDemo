@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using UserService.Application;
+using UserService.Application.Interfaces;
 
 namespace UserService.Infrastructure {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class {
